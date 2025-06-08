@@ -1,0 +1,9 @@
+PCRF:
+  - show subscriber summary
+  - show policy active
+MME:
+  - show mme statistics
+  - show eps bearer context
+PGW:
+  - show gtp sessions
+  - show interface usage
