@@ -1,0 +1,21 @@
+title: Modify Nokia CMM MME Configuration
+version: v1.0
+environment: Production
+description: >
+  CLI procedure to modify MME configurations in Nokia CMM v22.5, including PLMN updates, emergency support, and roaming restrictions.
+components:
+  - MME
+commands:
+  - ssh root@<NECC_IP>
+  - cmm authenticate
+  - cmm svcAgreementProfile modify VPLMNLBO-S --imsOverPs true --srvccPsToCs true --vplmnAllowed true
+  - cmm svcAgreementProfile modify VPLMNLBO-S --emergencySupported true
+  - cmm uePlmnServices modify 310020_LBOS --mccLteHmRtPgwDnsDmOvrd 123 --mncLteHmRtPgwDnsDmOvrd 456
+  - cmm areaList create --name TAC_Restrict_list --plmnName ETPLMN --listType "LTE HO Restrict List"
+  - cmm ueRoamRestrictProfile create --areaListName TAC_Restrict_list --servedPlmnName ETPLMN --listType "TAI List" --taiLaiPlmnName ETPLMN --tacLac 25620
+  - cmm uePlmnServices modify 460_100:460_100 --hoRestrictAreaListName TAC_Restrict_list
+  - cmm regionList create --name region1 --plmnName ETPLMN
+  - cmm regionTac create --regionListName region1 --plmnName ETPLMN --tac 25600
+  - cmm mmeforceIpChange create --regionListName region1 --forceIpTask start
+rollback:
+  - cmm mmeforceIpChange create --regionListName region1 --forceIpTask stop
